@@ -521,10 +521,18 @@ if [%DO_VERIFY%] == [TRUE] (
 
 GIT будет вызывать этот скрипт с аргементами `-bsau 3cac205d`. Электронная подпись должна выводиться на stdout, откуда её прочитает GIT.
 
+**Для Linux и MacOS:** создайте файл `sign-with-keybase.sh` со следующим содержимым:
+
+```bash
+echo "[GNUPG:] BEGIN_SIGNING D" >&2
+keybase pgp sign --detached --key "$3"
+echo "[GNUPG:] SIG_CREATED D" >&2
+```
+
 Теперь пора настроить GIT:
 
 ```shell
-$> git config --global gpg.program /path/to/sign-with-keybase.cmd
+$> git config --global gpg.program <полный путь к sign-with-keybase.cmd или sign-with-keybase.sh>
 $> git config --global commit.gpgsign true
 $> git config --global user.signingkey 3cac205d
 ```
@@ -535,7 +543,7 @@ $> git config --global user.signingkey 3cac205d
 
 **Заметка:** Скрипт `sign-with-keybase.cmd` поддерживает только наложения подписей Keybase-ом. Для проверки подписи используется стандартная утилита `gpg`. Поэтому команда `git log -n 5 --show-signature` Будет показывать предупреждение "Can't check signature: No public key".
 
-Чтобы убрать это предупреждение импортируйте публичные ключи из Keybase в pgp вручную:
+Чтобы убрать это предупреждение импортируйте публичные ключи из Keybase в gpg вручную:
 
 ```shell
 keybase pgp export | gpg --import
