@@ -501,7 +501,9 @@ PGP Identities:
 In my case fingerprint is `315a836d2513e723cf0dbe2bc622e5563cac205d` or last 8 symbols `3cac205d`.
 If there's no GPG keys in Keybase storage you need to create it with `keybase pgp gen` first.
 
-On Windows create `sign-with-keybase.cmd` file with content:
+**On Windows**
+
+Create `sign-with-keybase.cmd` file with content:
 
 ```cmd
 @echo OFF
@@ -522,10 +524,20 @@ if [%DO_VERIFY%] == [TRUE] (
 
 Git will call this CMD with arguments `-bsau 3cac205d`. Signature will be printed to stdout and picked by Git.
 
+**On Linux and MacOS**
+
+Create `sign-with-keybase.sh` file with content:
+
+```bash
+echo "[GNUPG:] BEGIN_SIGNING D" >&2
+keybase pgp sign --detached --key "$3"
+echo "[GNUPG:] SIG_CREATED D" >&2
+```
+
 Now it's time to setup GIT.
 
 ```shell
-$> git config --global gpg.program /path/to/sign-with-keybase.cmd
+$> git config --global gpg.program <full path to sign-with-keybase.cmd or sign-with-keybase.sh>
 $> git config --global user.signingkey 3cac205d
 $> git config --global commit.gpgsign true
 ```
@@ -533,7 +545,7 @@ $> git config --global commit.gpgsign true
 With this commands we tell GIT where to find our custom signing script and which key to be used for signing.
 You can omit `--global` flag if you want to enable signing only for some repositories.
 
-**Note** Script `sign-with-keybase.cmd` supports only signing with Keybase but for verification default `gpg` tool is used. That's why `git log -n 5 --show-signature` will show warning "Can't check signature: No public key".
+**Note** Script `sign-with-keybase` supports only signing with Keybase but for verification default `gpg` tool is used. That's why `git log -n 5 --show-signature` will show warning "Can't check signature: No public key".
 
 To fix this warning you need to import public keys from Keybase into gpg manually:
 
