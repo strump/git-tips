@@ -524,9 +524,23 @@ GIT будет вызывать этот скрипт с аргементами 
 **Для Linux и MacOS:** создайте файл `sign-with-keybase.sh` со следующим содержимым:
 
 ```bash
-echo "[GNUPG:] BEGIN_SIGNING D" >&2
-keybase pgp sign --detached --key "$3"
-echo "[GNUPG:] SIG_CREATED D" >&2
+verify="false"
+
+for var in "$@"
+do
+    if [[ $var = "--verify" ]]; then
+        verify="true"
+    fi
+done
+
+
+if [[ $verify = "true" ]]; then
+    gpg $@
+else
+    echo "[GNUPG:] BEGIN_SIGNING D" >&2
+    keybase pgp sign --detached --key "$3"
+    echo "[GNUPG:] SIG_CREATED D" >&2
+fi
 ```
 
 Теперь пора настроить GIT:
@@ -546,5 +560,5 @@ $> git config --global user.signingkey 3cac205d
 Чтобы убрать это предупреждение импортируйте публичные ключи из Keybase в gpg вручную:
 
 ```shell
-keybase pgp export | gpg --import
+keybase pgp export -q <KEY_ID> | gpg --import
 ```
