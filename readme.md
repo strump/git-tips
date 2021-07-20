@@ -529,9 +529,23 @@ Git will call this CMD with arguments `-bsau 3cac205d`. Signature will be printe
 Create `sign-with-keybase.sh` file with content:
 
 ```bash
-echo "[GNUPG:] BEGIN_SIGNING D" >&2
-keybase pgp sign --detached --key "$3"
-echo "[GNUPG:] SIG_CREATED D" >&2
+verify="false"
+
+for var in "$@"
+do
+    if [[ $var = "--verify" ]]; then
+        verify="true"
+    fi
+done
+
+
+if [[ $verify = "true" ]]; then
+    gpg $@
+else
+    echo "[GNUPG:] BEGIN_SIGNING D" >&2
+    keybase pgp sign --detached --key "$3"
+    echo "[GNUPG:] SIG_CREATED D" >&2
+fi
 ```
 
 Now it's time to setup GIT.
@@ -550,5 +564,5 @@ You can omit `--global` flag if you want to enable signing only for some reposit
 To fix this warning you need to import public keys from Keybase into gpg manually:
 
 ```shell
-keybase pgp export | gpg --import
+keybase pgp export -q <KEY_ID> | gpg --import
 ```
