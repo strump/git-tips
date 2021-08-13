@@ -539,7 +539,12 @@ if [[ $verify = "true" ]]; then
 else
     echo "[GNUPG:] BEGIN_SIGNING D" >&2
     keybase pgp sign --detached --key "$3"
-    echo "[GNUPG:] SIG_CREATED D" >&2
+    exit_code=$?
+    if [[ $exit_code = "0" ]]; then
+      echo "[GNUPG:] SIG_CREATED D" >&2
+    else
+      echo "[GNUPG:] INV_SGNR D $3" >&2
+    fi
 fi
 ```
 
