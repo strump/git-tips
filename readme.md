@@ -65,6 +65,12 @@ These lines disable SSL certificate check for site https://example.com
 $> ssh-keygen
 ```
 
+To generate private key using Elliptic curve encription run
+
+```shell
+$> ssh-keygen -a 100 -t ed25519
+```
+
 If you wish you may create passfrase (almost as a password which you will enter each time GIT is accessing key (often disturbs)), otherwise press `Enter` and skip this step. Next:
 
 ```shell
@@ -81,6 +87,12 @@ Copy output of this command (e.g. `ssh-rsa AAAAB3NzaC1yc2...EAID3Q== obe.wan@tat
 
 ```shell
 $> ssh-keygen -f <username>_git.ppk -C "<email@domain.com>"
+```
+
+To generate private key using Elliptic curve encription run
+
+```shell
+$> ssh-keygen -a 100 -t ed25519 -f <username>_git.ppk -C "<email@domain.com>"
 ```
 
 2. You will get two files: `<username>_git.ppk` and `<username>_git.ppk.pub`.
