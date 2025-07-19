@@ -519,15 +519,26 @@ PGP Identities:
 setlocal enabledelayedexpansion
 
 SET DO_VERIFY=FALSE
+SET LAST_ARG=NONE
 for %%x in (%*) do (
    if [%%~x]==[--verify] set DO_VERIFY=TRUE
+   SET LAST_ARG=%%x
 )
 
+echo "### Step 2" >> C:\temp\tmp.txt
 if [%DO_VERIFY%] == [TRUE] (
     @REM keybase pgp verify -d "%6" // Doens't work with 3rd party GPG signatures
     gpg %*
 ) ELSE (
-    keybase pgp sign --detached --key "%2"
+    echo [GNUPG:] BEGIN_SIGNING H8 >&2
+
+    keybase pgp sign --detached --key %LAST_ARG%
+
+    IF ERRORLEVEL 2 (
+        echo [GNUPG:] INV_SGNR D %LAST_ARG% >&2
+    ) ELSE (
+        echo [GNUPG:] SIG_CREATED D 1 8 >&2
+    )
 )
 ```
 
